@@ -12,7 +12,15 @@ exports.retrieveTeachers = functions.https.onRequest((req, res) => {
         var value = childSnapshot.val();
         Tea.push({
           ID: value.TeacherID,
-          TeachName: value.TeachName
+          TeachName: value.TeachName,
+          TeacherID : value.TeacherID,
+          Total: value.Total,
+          CourseID : value.Course_ID,
+          AvgProf : value.Avg_Professionalism,
+          AvgPrep : value.Avg_Preparation,
+          AvgLec : value.Avg_Lectures,
+          AvgHelp : value.Avg_Helpfulness,
+          AvgAtmos : value.Avg_Atmosphere
         });
       });
       res.status(200).write(JSON.stringify(Tea));
