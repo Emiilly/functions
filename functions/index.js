@@ -64,3 +64,29 @@ exports.retrieveCourse = functions.https.onRequest((req, res) => {
     });
   });
 });
+
+exports.retrieveReviews = functions.https.onRequest((req, res) => {
+  cors(req, res, () => {
+    var Rev = [];
+    const ref = admin.database().ref('Reviews').orderByKey();
+    ref.once('value').then(function (snapshot) {
+      snapshot.forEach(function (childSnapshot) {
+        var value = childSnapshot.val();
+        Rev.push({
+          ReviewID: value.Review_ID,
+          UserID: value.userID,
+          TeacherID: value.TeacherID,
+          Comment : value.comment,
+          Date: value.Date,
+          Prof: value.Professionalism,
+          Prep: value.Preparation,
+          Lec: value.Lectures,
+          Help: value.Helpfulness,
+          Atmos : value.Atmosphere
+        });
+      });
+      res.status(200).write(JSON.stringify(Rev));
+      res.end();
+    });
+  });
+});
