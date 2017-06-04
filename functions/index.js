@@ -13,14 +13,14 @@ exports.retrieveTeachers = functions.https.onRequest((req, res) => {
         Tea.push({
           ID: value.TeacherID,
           TeachName: value.TeachName,
-          TeacherID : value.TeacherID,
+          TeacherID: value.TeacherID,
           Total: value.Total,
-          CourseID : value.Course_ID,
-          AvgProf : value.Avg_Professionalism,
-          AvgPrep : value.Avg_Preparation,
-          AvgLec : value.Avg_Lectures,
-          AvgHelp : value.Avg_Helpfulness,
-          AvgAtmos : value.Avg_Atmosphere
+          CourseID: value.Course_ID,
+          AvgProf: value.Avg_Professionalism,
+          AvgPrep: value.Avg_Preparation,
+          AvgLec: value.Avg_Lectures,
+          AvgHelp: value.Avg_Helpfulness,
+          AvgAtmos: value.Avg_Atmosphere
         });
       });
       res.status(200).write(JSON.stringify(Tea));
@@ -76,13 +76,14 @@ exports.retrieveReviews = functions.https.onRequest((req, res) => {
           ReviewID: value.Review_ID,
           UserID: value.userID,
           TeacherID: value.TeacherID,
-          Comment : value.comment,
+          Comment: value.comment,
           Date: value.Date,
           Prof: value.Professionalism,
           Prep: value.Preparation,
           Lec: value.Lectures,
           Help: value.Helpfulness,
-          Atmos : value.Atmosphere
+          Atmos: value.Atmosphere,
+          weight: value.Weight
         });
       });
       res.status(200).write(JSON.stringify(Rev));
@@ -90,3 +91,63 @@ exports.retrieveReviews = functions.https.onRequest((req, res) => {
     });
   });
 });
+
+exports.userData = functions.https.onRequest((req, res) => {
+  cors(req, res, () => {
+  var user = [];
+    const ref = admin.database().ref('UserProfile').orderByKey();
+    ref.once('value').then(function (snapshot) {
+      snapshot.forEach(function (childSnapshot) {
+        var value = childSnapshot.val();
+        user.push({
+          PlaceID: value.Place_ID,
+          CourseID: value.CourseID,
+          Name : value.Name
+        });
+      });
+      res.status(200).write(JSON.stringify(user));
+      res.end();
+    });
+  });
+}); 
+
+exports.reportData = functions.https.onRequest((req, res) => {
+  cors(req, res, () => {
+  var reports = [];
+    const ref = admin.database().ref('Reports').orderByKey();
+    ref.once('value').then(function (snapshot) {
+      snapshot.forEach(function (childSnapshot) {
+        var value = childSnapshot.val();
+        reports.push({
+          Reason: value.Reason,
+          ReviewDate: value.ReviewDate,
+          Status : value.Status,
+          userID : value.userID,
+          ReviewID: value.Review_ID
+        });
+      });
+      res.status(200).write(JSON.stringify(reports));
+      res.end();
+    });
+  });
+}); 
+
+exports.requestData = functions.https.onRequest((req, res) => {
+  cors(req, res, () => {
+  var requests = [];
+    const ref = admin.database().ref('Requests').orderByKey();
+    ref.once('value').then(function (snapshot) {
+      snapshot.forEach(function (childSnapshot) {
+        var value = childSnapshot.val();
+        requests.push({
+          CourseID : value.CourseID,
+          RequestID : value.Request_ID,
+          Status : value.Status,
+          Teachname : value.TeachName
+        });
+      });
+      res.status(200).write(JSON.stringify(requests));
+      res.end();
+    });
+  });
+}); 
