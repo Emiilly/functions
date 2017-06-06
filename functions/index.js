@@ -68,23 +68,30 @@ exports.retrieveCourse = functions.https.onRequest((req, res) => {
 exports.retrieveReviews = functions.https.onRequest((req, res) => {
   cors(req, res, () => {
     var Rev = [];
+    var currentTime = new Date();
     const ref = admin.database().ref('Reviews').orderByKey();
     ref.once('value').then(function (snapshot) {
       snapshot.forEach(function (childSnapshot) {
         var value = childSnapshot.val();
-        Rev.push({
-          ReviewID: value.Review_ID,
-          UserID: value.userID,
-          TeacherID: value.TeacherID,
-          Comment: value.comment,
-          Date: value.Date,
-          Prof: value.Professionalism,
-          Prep: value.Preparation,
-          Lec: value.Lectures,
-          Help: value.Helpfulness,
-          Atmos: value.Atmosphere,
-          weight: value.Weight
-        });
+        var reviewTime = new Date(value.Date);
+        if((((((currentTime - reviewTime)/ 1000)/60)/60)/24)/365 >= 2){
+          childSnapshot.ref.remove();
+        }
+        else{
+          Rev.push({
+            ReviewID: value.Review_ID,
+            UserID: value.userID,
+            TeacherID: value.TeacherID,
+            Comment: value.comment,
+            Date: value.Date,
+            Prof: value.Professionalism,
+            Prep: value.Preparation,
+            Lec: value.Lectures,
+            Help: value.Helpfulness,
+            Atmos: value.Atmosphere,
+            weight: value.Weight
+          });
+        }
       });
       res.status(200).write(JSON.stringify(Rev));
       res.end();
@@ -102,7 +109,8 @@ exports.userData = functions.https.onRequest((req, res) => {
         user.push({
           PlaceID: value.Place_ID,
           CourseID: value.CourseID,
-          Name : value.Name
+          Name : value.Name,
+          Role : value.Role
         });
       });
       res.status(200).write(JSON.stringify(user));
